@@ -1,0 +1,102 @@
+/* Bảng giỏ hàng */
+table.table {
+    background-color: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Tiêu đề bảng */
+thead.table-light th {
+    background-color: #f8f9fa;
+    color: #333;
+    font-weight: bold;
+}
+
+/* Các dòng sản phẩm */
+table.table td {
+    vertical-align: middle;
+}
+
+/* Hình ảnh sản phẩm */
+table.table img {
+    border-radius: 8px;
+}
+
+/* Số lượng input */
+input[type="number"] {
+    text-align: center;
+}
+
+/* Thông báo vượt tồn kho */
+.text-danger.fw-bold {
+    background-color: #ffeaea;
+    border-left: 4px solid red;
+    padding: 8px;
+    font-size: 0.95rem;
+}
+
+/* Tổng tiền + thanh toán */
+h5 strong {
+    color: #d9534f;
+    font-size: 1.25rem;
+}
+
+form[action="ThanhToanServlet"] button {
+    padding: 10px 20px;
+    font-weight: bold;
+    font-size: 1rem;
+    background-color: #28a745;
+    border-color: #28a745;
+    transition: background-color 0.3s;
+}
+
+form[action="ThanhToanServlet"] button:hover {
+    background-color: #218838;
+}
+
+/* Nút cập nhật */
+form[action="UpdateQuantityServlet"] button {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+form[action="UpdateQuantityServlet"] button:hover {
+    background-color: #0b5ed7;
+}
+
+/* Nút xóa */
+form[action="RemoveFromCartServlet"] button {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+form[action="RemoveFromCartServlet"] button:hover {
+    background-color: #bb2d3b;
+}
+
+/* Quay lại */
+a.btn-link {
+    font-weight: bold;
+    color: #007bff;
+}
+
+a.btn-link:hover {
+    text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    table img {
+        width: 50px;
+    }
+
+    .d-flex.justify-content-between {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}

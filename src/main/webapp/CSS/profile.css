@@ -1,0 +1,64 @@
+/* Styles for the user profile card */
+.profile-card {
+    max-width: 600px;
+    margin: 50px auto; /* Centering the card with vertical margin */
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1); /* Soft shadow */
+    background-color: #fff; /* White background */
+}
+
+.profile-card h3 {
+    color: #28a745; /* Green color for the heading */
+    margin-bottom: 25px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.profile-card .form-label {
+    font-weight: 500;
+    color: #555; /* Darker grey for labels */
+}
+
+.profile-card .form-control-plaintext {
+    font-weight: bold;
+    color: #333; /* Darker text for values */
+}
+
+.profile-card .list-group-item {
+    border: none; /* Remove borders between list items */
+    padding-left: 0;
+    padding-right: 0;
+    display: flex; /* Use flexbox for label-value alignment */
+    align-items: baseline;
+    margin-bottom: 10px; /* Spacing between items */
+}
+
+.profile-card .list-group-item strong {
+    display: inline-block;
+    width: 140px; /* Fixed width for labels for better alignment */
+    min-width: 100px; /* Minimum width to prevent shrinking */
+    color: #007bff; /* Blue color for strong labels */
+    flex-shrink: 0; /* Prevent label from shrinking */
+}
+
+.profile-card .list-group-item p {
+    margin-bottom: 0; /* Remove default paragraph margin */
+    flex-grow: 1; /* Allow value to take up remaining space */
+}
+
+/* Adjustments for buttons within the card */
+.profile-card .btn {
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+/* Specific button styles if needed (already in Bootstrap/custom.css) */
+/* .profile-card .btn-success { ... } */
+/* .profile-card .btn-outline-secondary { ... } */
+
+/* Alert message style */
+.profile-card .alert {
+    margin-top: 20px;
+}

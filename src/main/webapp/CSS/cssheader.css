@@ -1,0 +1,13 @@
+.cart-badge {
+  position: absolute;
+  top: -6px;
+  right: -12px;
+  background-color: #ffc107; /* vàng */
+  color: #000;
+  font-weight: bold;
+  border-radius: 50%;
+  padding: 3px 7px;
+  font-size: 12px;
+  z-index: 10;
+  box-shadow: 0 0 0 2px #fff;
+}
