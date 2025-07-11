@@ -15,9 +15,10 @@
 <jsp:include page="/Custom_index.jsp" />
 
 <div class="container mt-4">
-    <a href="javascript:history.back()" class="btn btn-outline-primary mb-3">
-        <i class="fas fa-arrow-left"></i> Quay lại
-    </a>
+   <a href="<%= request.getContextPath() %>/Index.jsp" class="btn btn-outline-primary mb-3">
+    <i class="fas fa-arrow-left"></i> Quay lại trang chính
+</a>
+
     <%
         Model_NguoiDung user = (Model_NguoiDung) session.getAttribute("loggedInUser");
         if (user != null) {
@@ -32,8 +33,9 @@
             <li class="list-group-item"><strong>Vai trò:</strong> <%= user.getVaiTro() %></li>
         </ul>
         <div class="mt-4 d-flex gap-2">
-            <a href="#" class="btn btn-success">Chỉnh sửa thông tin</a>
-            <a href="#" class="btn btn-outline-secondary">Đổi mật khẩu</a>
+           <a href="<%= request.getContextPath() %>/profile" class="btn btn-success">Chỉnh sửa thông tin</a>
+    <a href="<%= request.getContextPath() %>/doi-mat-khau" class="btn btn-outline-secondary">Đổi mật khẩu</a>
+
         </div>
     </div>
     <%

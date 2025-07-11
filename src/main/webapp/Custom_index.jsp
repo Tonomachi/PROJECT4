@@ -26,17 +26,12 @@
     
     <!-- Logo -->
     <div class="logo d-flex align-items-center">
-      <img src="<%= ctx %>/images/logo.png" alt="Logo" height="35" class="me-2">
+      <img src="<%= ctx %>/images/mem.jfif" alt="Logo" height="35" class="me-2">
       <span class="fs-4 fw-bold">FOOD CLEAN</span>
     </div>
 
     <!-- Search box -->
-    <form class="d-flex flex-grow-1 mx-4" role="search">
-      <input class="form-control rounded-start-pill" type="search" placeholder="Bạn cần tìm gì?" aria-label="Search">
-      <button class="btn btn-light rounded-end-pill ms-1" type="submit">
-        <i class="fas fa-search"></i>
-      </button>
-    </form>
+   
 
     <!-- Right section -->
     <div class="d-flex align-items-center">

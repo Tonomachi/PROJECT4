@@ -4,12 +4,11 @@ import Data.NguoiDung;
 import Model.Model_NguoiDung;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.*;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -20,100 +19,117 @@ public class UserManagementServlet extends HttpServlet {
     private NguoiDung nguoiDungDao;
 
     @Override
-    public void init() throws ServletException {
-        super.init();
+    public void init() {
         nguoiDungDao = new NguoiDung();
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setCharacterEncoding("UTF-8");
-        response.setCharacterEncoding("UTF-8");
+    /* ==========================  GET  ========================== */
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
 
-        HttpSession session = request.getSession(false);
-        Model_NguoiDung loggedInUser = (session != null) ? (Model_NguoiDung) session.getAttribute("loggedInUser") : null;
-        String userRole = (loggedInUser != null) ? loggedInUser.getVaiTro().trim() : null; // Đảm bảo trim()
+        req.setCharacterEncoding("UTF-8");
+        resp.setCharacterEncoding("UTF-8");
 
-        // PHÂN QUYỀN: CHỈ ADMIN MỚI CÓ THỂ TRUY CẬP
-        if (loggedInUser == null || !"admin".equals(userRole)) {
-            response.sendRedirect(request.getContextPath() + "/Login.jsp?errorMessage=Bạn không có quyền truy cập trang quản lý người dùng.");
+        /* ─── Kiểm tra quyền admin ─── */
+        HttpSession ss = req.getSession(false);
+        Model.Model_NguoiDung admin = (ss != null) ? (Model_NguoiDung) ss.getAttribute("loggedInUser") : null;
+        if (admin == null || !"admin".equalsIgnoreCase(admin.getVaiTro())) {
+            String msg = URLEncoder.encode("Bạn không có quyền truy cập!", StandardCharsets.UTF_8);
+            resp.sendRedirect(req.getContextPath() + "/Login.jsp?errorMessage=" + msg);
             return;
         }
 
-        String action = request.getParameter("action");
-        if ("editRole".equals(action)) {
-            try {
-                int maNguoiDung = Integer.parseInt(request.getParameter("id"));
-                Model_NguoiDung userToEdit = nguoiDungDao.getUserById(maNguoiDung);
-
-                if (userToEdit != null) {
-                    request.setAttribute("userToEdit", userToEdit);
-                    request.getRequestDispatcher("/editUserRole.jsp").forward(request, response);
-                } else {
-                    request.setAttribute("errorMessage", "Không tìm thấy người dùng với ID: " + maNguoiDung);
-                    request.getRequestDispatcher("/error.jsp").forward(request, response);
+        String action = req.getParameter("action");
+        try {
+            if ("editUser".equals(action)) {
+                int id = Integer.parseInt(req.getParameter("id"));
+                Model_NguoiDung u = nguoiDungDao.getUserById(id);
+                if (u == null) {
+                    req.setAttribute("errorMessage", "Không tìm thấy người dùng!");
+                    req.getRequestDispatcher("/error.jsp").forward(req, resp);
+                    return;
                 }
-            } catch (NumberFormatException | SQLException e) {
-                e.printStackTrace();
-                request.setAttribute("errorMessage", "Lỗi khi lấy thông tin người dùng: " + e.getMessage());
-                request.getRequestDispatcher("/error.jsp").forward(request, response);
+                req.setAttribute("editUser", u);
+                req.getRequestDispatcher("/editUserInfo.jsp").forward(req, resp);
+                return;
             }
-        } else if ("list".equals(action) || action == null) {
-            try {
-                List<Model_NguoiDung> users = nguoiDungDao.getAllUsers();
-                request.setAttribute("users", users);
-                request.getRequestDispatcher("/danh_sach_nguoi_dung.jsp").forward(request, response); // Đảm bảo đường dẫn đúng
-            } catch (SQLException e) {
-                e.printStackTrace();
-                request.setAttribute("errorMessage", "Lỗi khi tải danh sách người dùng: " + e.getMessage());
-                request.getRequestDispatcher("/error.jsp").forward(request, response);
-            }
-        } else {
-            response.sendRedirect(request.getContextPath() + "/UserManagementServlet?action=list");
+
+            /* Mặc định: hiển thị danh sách */
+            List<Model_NguoiDung> list = nguoiDungDao.getAllUsers();
+            req.setAttribute("users", list);
+            req.getRequestDispatcher("/danh_sach_nguoi_dung.jsp").forward(req, resp);
+        } catch (Exception ex) {
+            req.setAttribute("errorMessage", "Lỗi: " + ex.getMessage());
+            req.getRequestDispatcher("/error.jsp").forward(req, resp);
         }
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setCharacterEncoding("UTF-8");
-        response.setCharacterEncoding("UTF-8");
+    /* ==========================  POST  ========================= */
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
 
-        HttpSession session = request.getSession(false);
-        Model_NguoiDung loggedInUser = (session != null) ? (Model_NguoiDung) session.getAttribute("loggedInUser") : null;
-        String userRole = (loggedInUser != null) ? loggedInUser.getVaiTro().trim() : null; // Đảm bảo trim()
+        req.setCharacterEncoding("UTF-8");
+        resp.setCharacterEncoding("UTF-8");
 
-        // PHÂN QUYỀN: CHỈ ADMIN MỚI CÓ THỂ THAY ĐỔI
-        if (loggedInUser == null || !"admin".equals(userRole)) {
-            response.sendRedirect(request.getContextPath() + "/Login.jsp?errorMessage=Bạn không có quyền thực hiện thao tác này.");
+        /* ─── Kiểm tra quyền admin ─── */
+        HttpSession ss = req.getSession(false);
+        Model_NguoiDung admin = (ss != null) ? (Model_NguoiDung) ss.getAttribute("loggedInUser") : null;
+        if (admin == null || !"admin".equalsIgnoreCase(admin.getVaiTro())) {
+            String msg = URLEncoder.encode("Bạn không có quyền!", StandardCharsets.UTF_8);
+            resp.sendRedirect(req.getContextPath() + "/Login.jsp?errorMessage=" + msg);
             return;
         }
 
-        String action = request.getParameter("action");
-        if ("updateRole".equals(action)) {
-            try {
-                int maNguoiDung = Integer.parseInt(request.getParameter("maNguoiDung"));
-                String vaiTroMoi = request.getParameter("vaiTro");
+        String action = req.getParameter("action");
+        String message = "";
+        String redirectUrl = req.getContextPath() + "/UserManagementServlet?action=list"; // Mặc định về danh sách
 
-                Model_NguoiDung userToUpdate = nguoiDungDao.getUserById(maNguoiDung);
-                if (userToUpdate != null) {
-                    userToUpdate.setVaiTro(vaiTroMoi); // Set vai trò mới vào đối tượng
-                    boolean updated = nguoiDungDao.updateUserRole(userToUpdate); // Gọi phương thức update vai trò
+        try {
+            if ("updateUserInfo".equals(action)) {
+                int maNguoiDung = Integer.parseInt(req.getParameter("maNguoiDung"));
+                String hoTen = req.getParameter("hoTen");
+                String email = req.getParameter("email");
+                String soDienThoai = req.getParameter("soDienThoai");
+                String diaChi = req.getParameter("diaChi");
+                String vaiTro = req.getParameter("vaiTro");
 
-                    if (updated) {
-                         response.sendRedirect(request.getContextPath() + "/UserManagementServlet?action=list&message=Cập nhật vai trò thành công.");
-                    } else {
-                         request.setAttribute("errorMessage", "Cập nhật vai trò thất bại.");
-                         request.getRequestDispatcher("/error.jsp").forward(request, response);
-                    }
-                } else {
-                    request.setAttribute("errorMessage", "Không tìm thấy người dùng để cập nhật.");
-                    request.getRequestDispatcher("/error.jsp").forward(request, response);
+                Model_NguoiDung existingUser = nguoiDungDao.getUserById(maNguoiDung);
+                if (existingUser == null) {
+                    throw new SQLException("Không tìm thấy người dùng có ID: " + maNguoiDung);
                 }
-            } catch (NumberFormatException | SQLException e) {
-                e.printStackTrace();
-                request.setAttribute("errorMessage", "Lỗi khi cập nhật vai trò người dùng: " + e.getMessage());
-                request.getRequestDispatcher("/error.jsp").forward(request, response);
+
+                existingUser.setHoTen(hoTen);
+                existingUser.setEmail(email);
+                existingUser.setSoDienThoai(soDienThoai);
+                existingUser.setDiaChi(diaChi);
+                existingUser.setVaiTro(vaiTro);
+
+                boolean ok = nguoiDungDao.updateAllUserInfo(existingUser);
+
+                message = ok ? "Cập nhật thông tin người dùng thành công!" : "Cập nhật thông tin người dùng thất bại!";
+                // redirectUrl đã được set mặc định ở trên, không cần thay đổi ở đây nữa
+            } else {
+                resp.sendRedirect(redirectUrl);
+                return;
             }
-        } else {
-            response.sendRedirect(request.getContextPath() + "/UserManagementServlet?action=list");
+
+            String param = URLEncoder.encode(message, StandardCharsets.UTF_8);
+            resp.sendRedirect(redirectUrl + "&message=" + param); // Chuyển hướng về danh sách với thông báo
+
+        } catch (Exception ex) {
+            req.setAttribute("errorMessage", "Lỗi xử lý: " + ex.getMessage());
+            // Nếu lỗi khi cập nhật, vẫn quay lại trang chỉnh sửa với thông báo lỗi
+            try {
+                int id = Integer.parseInt(req.getParameter("maNguoiDung"));
+                Model_NguoiDung u = nguoiDungDao.getUserById(id);
+                req.setAttribute("editUser", u);
+                req.getRequestDispatcher("/editUserInfo.jsp").forward(req, resp);
+            } catch (NumberFormatException | SQLException e) {
+                 req.setAttribute("errorMessage", "Lỗi khi lấy lại thông tin người dùng sau khi cập nhật: " + e.getMessage());
+                 req.getRequestDispatcher("/error.jsp").forward(req, resp);
+            }
         }
     }
 }

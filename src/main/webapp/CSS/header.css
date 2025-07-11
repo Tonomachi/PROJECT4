@@ -1,0 +1,33 @@
+/* ===== header.css ===== */
+.navbar {
+    background-color: #f8f9fa !important;
+    padding: 10px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.navbar-nav .nav-item {
+    text-align: center;
+}
+
+.navbar-nav .nav-link,
+.navbar-nav .dropdown-item {
+    font-weight: 500;
+    font-size: 16px;
+    color: #333;
+    white-space: nowrap;
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-nav .dropdown-item:hover {
+    color: #28a745;
+    text-decoration: underline;
+}
+
+.navbar-brand {
+    margin-right: 40px;
+}
+
+/* Dropdown user bên phải */
+.navbar-nav .dropdown {
+    margin-left: auto;
+}

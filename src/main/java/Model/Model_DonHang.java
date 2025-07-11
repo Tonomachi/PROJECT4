@@ -8,8 +8,12 @@ public class Model_DonHang {
     private double tongTien;
     private String trangThai;
     private LocalDateTime ngayDat;
-    private String diaChiGiao;     // ✅ sửa tên cho trùng DB
+    private String diaChiGiao;
     private String ghiChu;
+
+    // Thông tin người dùng (JOIN từ bảng nguoidung)
+    private String hoTenNguoiDung;
+    private String soDienThoaiNguoiDung;
 
     // Constructors
     public Model_DonHang() {}
@@ -26,20 +30,76 @@ public class Model_DonHang {
     }
 
     // Getters
-    public int getMaDonHang() { return maDonHang; }
-    public int getMaNguoiDung() { return maNguoiDung; }
-    public double getTongTien() { return tongTien; }
-    public String getTrangThai() { return trangThai; }
-    public LocalDateTime getNgayDat() { return ngayDat; }
-    public String getDiaChiGiao() { return diaChiGiao; }  // ✅ đổi tên getter
-    public String getGhiChu() { return ghiChu; }
+    public int getMaDonHang() {
+        return maDonHang;
+    }
+
+    public int getMaNguoiDung() {
+        return maNguoiDung;
+    }
+
+    public double getTongTien() {
+        return tongTien;
+    }
+
+    public String getTrangThai() {
+        return trangThai;
+    }
+
+    public LocalDateTime getNgayDat() {
+        return ngayDat;
+    }
+
+    public String getDiaChiGiao() {
+        return diaChiGiao;
+    }
+
+    public String getGhiChu() {
+        return ghiChu;
+    }
+
+    public String getHoTenNguoiDung() {
+        return hoTenNguoiDung;
+    }
+
+    public String getSoDienThoaiNguoiDung() {
+        return soDienThoaiNguoiDung;
+    }
 
     // Setters
-    public void setMaDonHang(int maDonHang) { this.maDonHang = maDonHang; }
-    public void setMaNguoiDung(int maNguoiDung) { this.maNguoiDung = maNguoiDung; }
-    public void setTongTien(double tongTien) { this.tongTien = tongTien; }
-    public void setTrangThai(String trangThai) { this.trangThai = trangThai; }
-    public void setNgayDat(LocalDateTime ngayDat) { this.ngayDat = ngayDat; }
-    public void setDiaChiGiao(String diaChiGiao) { this.diaChiGiao = diaChiGiao; } // ✅ đổi tên setter
-    public void setGhiChu(String ghiChu) { this.ghiChu = ghiChu; }
+    public void setMaDonHang(int maDonHang) {
+        this.maDonHang = maDonHang;
+    }
+
+    public void setMaNguoiDung(int maNguoiDung) {
+        this.maNguoiDung = maNguoiDung;
+    }
+
+    public void setTongTien(double tongTien) {
+        this.tongTien = tongTien;
+    }
+
+    public void setTrangThai(String trangThai) {
+        this.trangThai = trangThai;
+    }
+
+    public void setNgayDat(LocalDateTime ngayDat) {
+        this.ngayDat = ngayDat;
+    }
+
+    public void setDiaChiGiao(String diaChiGiao) {
+        this.diaChiGiao = diaChiGiao;
+    }
+
+    public void setGhiChu(String ghiChu) {
+        this.ghiChu = ghiChu;
+    }
+
+    public void setHoTenNguoiDung(String hoTenNguoiDung) {
+        this.hoTenNguoiDung = hoTenNguoiDung;
+    }
+
+    public void setSoDienThoaiNguoiDung(String soDienThoaiNguoiDung) {
+        this.soDienThoaiNguoiDung = soDienThoaiNguoiDung;
+    }
 }

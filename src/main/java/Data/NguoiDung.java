@@ -11,6 +11,34 @@ import java.util.List;
 
 public class NguoiDung {
 
+    // ... (Các phương thức validateLogin, isEmailExists, registerUser, getUserById, updateUserRole, getAllUsers, updateVaiTro, updatePassword, getLichSuDangNhap, logLogin giữ nguyên)
+
+    // Phương thức CẬP NHẬT TẤT CẢ THÔNG TIN NGƯỜI DÙNG (cho Admin) - KHÔNG BAO GỒM MẬT KHẨU
+    public boolean updateAllUserInfo(Model_NguoiDung u) throws SQLException {
+        String sql = """
+            UPDATE nguoidung
+               SET HoTen       = ? ,
+                   Email       = ? ,
+                   SoDienThoai = ? ,
+                   DiaChi      = ? ,
+                   VaiTro      = ?
+             WHERE MaNguoiDung = ?
+        """;
+        try (Connection c = ConnectSQL.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, u.getHoTen());
+            ps.setString(2, u.getEmail());
+            // ps.setString(3, u.getMatKhau()); // XÓA DÒNG NÀY ĐỂ KHÔNG CẬP NHẬT MẬT KHẨU
+            ps.setString(3, u.getSoDienThoai()); // Sửa lại chỉ số tham số
+            ps.setString(4, u.getDiaChi());     // Sửa lại chỉ số tham số
+            ps.setString(5, u.getVaiTro());     // Sửa lại chỉ số tham số
+            ps.setInt   (6, u.getMaNguoiDung());// Sửa lại chỉ số tham số
+            return ps.executeUpdate() > 0;
+        }
+    }
+
+    // --- Các phương thức còn lại của bạn (giữ nguyên) ---
+
     public Model_NguoiDung validateLogin(String email, String matKhau) throws SQLException {
         String sql = "SELECT MaNguoiDung, HoTen, Email, MatKhau, SoDienThoai, DiaChi, VaiTro, NgayTao FROM nguoidung WHERE Email = ? AND MatKhau = ?";
         try (Connection conn = ConnectSQL.getConnection();
@@ -26,7 +54,7 @@ public class NguoiDung {
                     nguoiDung.setMatKhau(rs.getString("MatKhau"));
                     nguoiDung.setSoDienThoai(rs.getString("SoDienThoai"));
                     nguoiDung.setDiaChi(rs.getString("DiaChi"));
-                    nguoiDung.setVaiTro(rs.getString("VaiTro")); // Đảm bảo tên cột chính xác "VaiTro"
+                    nguoiDung.setVaiTro(rs.getString("VaiTro"));
                     nguoiDung.setNgayTao(rs.getTimestamp("NgayTao"));
                     return nguoiDung;
                 }
@@ -49,7 +77,6 @@ public class NguoiDung {
         return false;
     }
 
-    // Đã sửa: Kiểu trả về là boolean và thêm return
     public boolean registerUser(Model_NguoiDung nguoiDung) throws SQLException {
         String sql = "INSERT INTO nguoidung (HoTen, Email, MatKhau, SoDienThoai, DiaChi, VaiTro) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = ConnectSQL.getConnection();
@@ -62,7 +89,7 @@ public class NguoiDung {
             ps.setString(6, nguoiDung.getVaiTro());
 
             int rowsAffected = ps.executeUpdate();
-            return rowsAffected > 0; // Trả về true nếu thành công
+            return rowsAffected > 0;
         }
     }
 
@@ -122,7 +149,6 @@ public class NguoiDung {
         return userList;
     }
 
-    // Phương thức 'updateVaiTro' bạn có thể giữ hoặc xóa tùy ý
     public boolean updateVaiTro(int maNguoiDung, String newVaiTro) throws SQLException {
         String sql = "UPDATE nguoidung SET VaiTro = ? WHERE MaNguoiDung = ?";
         try (Connection conn = ConnectSQL.getConnection();
@@ -131,6 +157,69 @@ public class NguoiDung {
             ps.setInt(2, maNguoiDung);
             int rowsAffected = ps.executeUpdate();
             return rowsAffected > 0;
+        }
+    }
+
+
+    public boolean updateUserInfo(Model_NguoiDung u) throws SQLException {
+        String sql = """
+            UPDATE nguoidung
+               SET HoTen       = ? ,
+                   Email       = ? ,
+                   SoDienThoai = ? ,
+                   DiaChi      = ?
+             WHERE MaNguoiDung = ?
+        """;
+        try (Connection c = ConnectSQL.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, u.getHoTen());
+            ps.setString(2, u.getEmail());
+            ps.setString(3, u.getSoDienThoai());
+            ps.setString(4, u.getDiaChi());
+            ps.setInt   (5, u.getMaNguoiDung());
+            return ps.executeUpdate() > 0;
+        }
+    }
+
+    public boolean updatePassword(int maNguoiDung, String newPassword) throws SQLException {
+        String sql = "UPDATE nguoidung SET MatKhau = ? WHERE MaNguoiDung = ?";
+        try (Connection conn = ConnectSQL.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, newPassword);
+            ps.setInt(2, maNguoiDung);
+            return ps.executeUpdate() > 0;
+        }
+    }
+    public List<String[]> getLichSuDangNhap() throws SQLException {
+        List<String[]> list = new ArrayList<>();
+        String sql = """
+            SELECT ls.ID, nd.HoTen, ls.ThoiGian, ls.DiaChiIP
+            FROM   lichsu_dangnhap ls
+                   JOIN nguoidung nd ON ls.MaNguoiDung = nd.MaNguoiDung
+            ORDER  BY ls.ThoiGian DESC
+        """;
+        try (Connection conn = ConnectSQL.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                list.add(new String[]{
+                    rs.getString("ID"),
+                    rs.getString("HoTen"),
+                    rs.getString("ThoiGian"),
+                    rs.getString("DiaChiIP")
+                });
+            }
+        }
+        return list;
+    }
+    public boolean logLogin(int maNguoiDung, String ip) throws SQLException {
+        String sql = "INSERT INTO lichsu_dangnhap(MaNguoiDung,DiaChiIP) VALUES(?,?)";
+        try (Connection c = ConnectSQL.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setInt   (1, maNguoiDung);
+            ps.setString(2, ip);
+            return ps.executeUpdate() > 0;
         }
     }
 }

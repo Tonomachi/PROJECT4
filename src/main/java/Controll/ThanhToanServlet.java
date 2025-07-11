@@ -23,19 +23,23 @@ public class ThanhToanServlet extends HttpServlet {
         req.setCharacterEncoding("UTF-8");
         resp.setCharacterEncoding("UTF-8");
 
+        /* -------- 0. XÁC THỰC ĐĂNG NHẬP -------- */
         HttpSession ss = req.getSession(false);
         Model_NguoiDung user = (ss == null) ? null
                 : (Model_NguoiDung) ss.getAttribute("loggedInUser");
-        if (user == null) { resp.sendRedirect("Login.jsp"); return; }
+        if (user == null) {
+            resp.sendRedirect("Login.jsp");
+            return;
+        }
 
-        /* NHÁNH “Mua ngay” ------------------------------------ */
+        /* -------- 1. NHÁNH “Mua ngay” (addToCart & goto checkout) -------- */
         if ("addToCartAndCheckout".equals(req.getParameter("action"))) {
             try (GioHang dao = new GioHang()) {
                 int pid = Integer.parseInt(req.getParameter("maSanPham"));
                 int qty = Integer.parseInt(req.getParameter("soLuong"));
                 dao.addOrUpdateGioHang(user.getMaNguoiDung(), pid, qty);
             } catch (Exception e) {
-                req.setAttribute("errorMessage", "Lỗi CSDL khi thêm giỏ.");
+                req.setAttribute("errorMessage", "Lỗi khi thêm sản phẩm vào giỏ!");
                 req.getRequestDispatcher("/index.jsp").forward(req, resp);
                 return;
             }
@@ -43,46 +47,50 @@ public class ThanhToanServlet extends HttpServlet {
             return;
         }
 
-        /* XỬ LÝ THANH TOÁN ----------------------------------- */
-        String diaChi   = (req.getParameter("diaChi")  == null || req.getParameter("diaChi").isBlank())
-                            ? user.getDiaChi() : req.getParameter("diaChi");
-        String ghiChu   = req.getParameter("ghiChu");
-        String hinhThuc = (req.getParameter("hinhThucThanhToan") == null
-                           || req.getParameter("hinhThucThanhToan").isBlank())
-                           ? "COD" : req.getParameter("hinhThucThanhToan");
+        /* -------- 2. ĐỌC DỮ LIỆU FORM -------- */
+        String diaChi = req.getParameter("diaChi");
+        if (diaChi == null || diaChi.isBlank()) diaChi = user.getDiaChi();
 
+        String ghiChu   = req.getParameter("ghiChu");
+        String hinhThuc = req.getParameter("hinhThucThanhToan");
+        if (hinhThuc == null || hinhThuc.isBlank()) hinhThuc = "COD";
+
+        /* -------- 3. XỬ LÝ GIAO DỊCH -------- */
         try (Connection conn = ConnectSQL.getConnection()) {
             conn.setAutoCommit(false);
 
-            GioHang ghDAO = new GioHang(conn);
-            SanPham spDAO = new SanPham(conn);
-            DonHang dhDAO = new DonHang(conn);
-            ChiTietDonHang ctDAO = new ChiTietDonHang(conn);
-            ThanhToan ttDAO = new ThanhToan(conn);
+            GioHang           ghDAO = new GioHang(conn);
+            SanPham           spDAO = new SanPham(conn);
+            DonHang           dhDAO = new DonHang(conn);
+            ChiTietDonHang    ctDAO = new ChiTietDonHang(conn);
+            ThanhToan         ttDAO = new ThanhToan(conn);
 
             List<Model_GioHang> cart = ghDAO.getGioHangByMaNguoiDung(user.getMaNguoiDung());
             if (cart == null || cart.isEmpty())
                 throw new Exception("Giỏ hàng trống – không thể thanh toán.");
 
-            BigDecimal total = BigDecimal.ZERO;
+            /* ---- 3.1 kiểm kho & tính tổng ---- */
+            BigDecimal tongTien = BigDecimal.ZERO;
             for (Model_GioHang item : cart) {
                 Model_SanPham sp = spDAO.getSanPhamById(item.getMaSanPham());
                 if (sp == null || sp.getSoLuongTonKho() < item.getSoLuong())
                     throw new Exception("Sản phẩm '" + item.getMaSanPham() + "' không đủ tồn kho.");
-                total = total.add(sp.getGia().multiply(BigDecimal.valueOf(item.getSoLuong())));
+                tongTien = tongTien.add(
+                        sp.getGia().multiply(BigDecimal.valueOf(item.getSoLuong())));
             }
 
+            /* ---- 3.2 tạo đơn hàng ---- */
             Model_DonHang dh = new Model_DonHang();
             dh.setMaNguoiDung(user.getMaNguoiDung());
-            dh.setTongTien(total.doubleValue());
+            dh.setTongTien(tongTien.doubleValue());
             dh.setTrangThai("Chờ xác nhận");
             dh.setNgayDat(LocalDateTime.now());
             dh.setDiaChiGiao(diaChi);
             dh.setGhiChu(ghiChu);
-
             int maDH = dhDAO.addDonHang(dh);
             if (maDH <= 0) throw new Exception("Không tạo được đơn hàng.");
 
+            /* ---- 3.3 chi tiết + cập nhật tồn kho ---- */
             for (Model_GioHang item : cart) {
                 Model_ChiTietDonHang ct = new Model_ChiTietDonHang();
                 ct.setMaDonHang(maDH);
@@ -94,18 +102,23 @@ public class ThanhToanServlet extends HttpServlet {
                 spDAO.updateSoLuongTon(item.getMaSanPham(), item.getSoLuong());
             }
 
+            /* ---- 3.4 ghi thanh toán ---- */
             Model_ThanhToan pay = new Model_ThanhToan();
             pay.setMaDonHang(maDH);
             pay.setHinhThuc(hinhThuc);
             pay.setTrangThai("ChuaThanhToan");
             ttDAO.addThanhToan(pay);
 
-            ghDAO.clearGioHang(user.getMaNguoiDung());          // xoá giỏ
-            ss.removeAttribute("gioHangList");                   // xoá session
-            ss.setAttribute("cartCount", 0);                     // icon = 0
+            /* ---- 3.5 clear giỏ & session ---- */
+            ghDAO.clearGioHang(user.getMaNguoiDung());
+            ss.removeAttribute("gioHangList");
+            ss.setAttribute("cartCount", 0);
 
             conn.commit();
-            resp.sendRedirect(req.getContextPath() + "/xac_nhan_don_hang.jsp?maDonHang=" + maDH);
+
+            /* ---- 3.6 redirect xác nhận ---- */
+            resp.sendRedirect(req.getContextPath()
+                    + "/xac_nhan_don_hang.jsp?maDonHang=" + maDH);
 
         } catch (Exception e) {
             e.printStackTrace();

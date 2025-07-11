@@ -1,0 +1,221 @@
+/* === style.css === */
+
+/* General Body & Typography */
+body {
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; /* Hoặc sử dụng Google Fonts */
+    background-color: #f8f9fa; /* Màu nền nhẹ nhàng */
+    color: #333;
+    line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #212529; /* Màu chữ tiêu đề đậm hơn */
+}
+
+/* Container Spacing */
+.container {
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+/* Category Box (Khung danh mục bên trái) */
+.category-box {
+    background: #ffffff;
+    border: none; /* Bỏ border */
+    border-radius: 10px; /* Bo tròn hơn */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08); /* Đổ bóng tinh tế hơn */
+    padding: 20px; /* Tăng padding */
+}
+
+.category-box h5 {
+    color: #28a745; /* Màu xanh lá cây cho tiêu đề danh mục */
+    font-weight: 600;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee; /* Đường kẻ dưới tiêu đề */
+}
+
+.category-list {
+    padding-left: 0; /* Đảm bảo không có padding mặc định của ul */
+}
+
+.category-list li {
+    margin-bottom: 5px;
+}
+
+/* Filter Button (Nút danh mục) */
+.filter-button {
+    width: 100%; /* Đảm bảo nút chiếm hết chiều rộng */
+    text-align: left; /* Căn trái text */
+    padding: 10px 15px; /* Tăng padding nút */
+    border: 1px solid #e0e0e0; /* Border nhẹ hơn */
+    border-radius: 8px; /* Bo tròn nút */
+    background-color: #f0f2f5; /* Nền nhẹ nhàng hơn */
+    color: #495057; /* Màu chữ mặc định */
+    transition: all 0.3s ease; /* Hiệu ứng chuyển đổi mượt mà hơn */
+}
+
+/* Filter Button Active State (Nút danh mục đang chọn) */
+.filter-button.active {
+    background-color: #28a745 !important; /* Màu xanh lá cây đậm */
+    color: #fff !important;
+    font-weight: 600; /* Đậm hơn */
+    border-color: #28a745 !important;
+    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.2); /* Đổ bóng khi active */
+}
+
+/* Filter Button Hover State (Hover nút danh mục) */
+.filter-button:hover:not(.active) { /* Chỉ hover khi không phải active */
+    background-color: #eaf7ed; /* Màu xanh lá cây nhạt khi hover */
+    color: #218838;
+    border-color: #218838;
+    transform: translateY(-2px); /* Nhấc nhẹ lên khi hover */
+}
+
+/* Product Card (Thẻ sản phẩm) */
+.product-card {
+    border-radius: 12px; /* Bo tròn nhiều hơn */
+    overflow: hidden;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1); /* Đổ bóng rõ hơn nhưng mềm mại */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Hiệu ứng chuyển đổi mượt mà hơn */
+    background-color: #ffffff;
+    height: 100%; /* Đảm bảo chiều cao đồng đều trong row-cols */
+    display: flex;
+    flex-direction: column;
+}
+
+.product-card:hover {
+    transform: translateY(-8px); /* Nhấc cao hơn khi hover */
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15); /* Đổ bóng mạnh hơn khi hover */
+}
+
+/* Product Image (Ảnh sản phẩm) */
+.product-card img {
+    height: 220px; /* Tăng chiều cao ảnh */
+    object-fit: cover;
+    border-bottom: 1px solid #eee; /* Đường kẻ dưới ảnh */
+}
+
+/* Product Card Body */
+.product-card .card-body {
+    padding: 15px; /* Điều chỉnh padding */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Đẩy nội dung lên trên, nút xuống dưới */
+    flex-grow: 1; /* Cho phép body mở rộng */
+}
+
+.product-card h5 {
+    font-size: 1.15rem; /* Kích thước tiêu đề sản phẩm */
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.product-card p.text-danger {
+    font-size: 1.25rem; /* Kích thước giá sản phẩm */
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #dc3545 !important; /* Đảm bảo màu đỏ */
+}
+
+/* Buttons Container */
+.product-card .d-flex.flex-column.gap-2 {
+    margin-top: auto; /* Đẩy các nút xuống cuối card-body */
+}
+
+/* Add to Cart Button (Nút thêm vào giỏ) */
+.btn-add-cart {
+    background-color: #007bff; /* Màu xanh dương Bootstrap */
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    width: 100%; /* Đảm bảo nút đầy đủ chiều rộng */
+}
+
+.btn-add-cart:hover {
+    background-color: #0056b3; /* Màu xanh đậm hơn khi hover */
+    transform: translateY(-1px);
+}
+
+/* Add to Cart Button States (cho JS) */
+.btn-add-cart.adding {
+    background-color: #6c757d; /* Màu xám khi đang thêm */
+    cursor: not-allowed;
+}
+
+.btn-add-cart.added {
+    background-color: #28a745; /* Màu xanh lá cây khi đã thêm */
+}
+
+/* Buy Now Button (Nút mua ngay) */
+.btn-buy-now {
+    background-color: #ffc107; /* Màu vàng cam */
+    color: #212529; /* Chữ màu đen */
+    border: none;
+    padding: 10px 15px;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    width: 100%; /* Đảm bảo nút đầy đủ chiều rộng */
+}
+
+.btn-buy-now:hover {
+    background-color: #e0a800; /* Màu vàng cam đậm hơn khi hover */
+    transform: translateY(-1px);
+}
+
+/* Search Box Enhancements */
+.input-group .form-control {
+    border-radius: 6px !important; /* Bo tròn input */
+}
+
+.input-group-text {
+    background-color: #e9ecef;
+    border-right: none;
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+}
+
+/* Main Content Headings */
+h2.text-center {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #28a745;
+    margin-bottom: 40px !important;
+    position: relative;
+}
+
+h2.text-center::after {
+    content: '';
+    display: block;
+    width: 80px;
+    height: 3px;
+    background-color: #ffc107;
+    margin: 15px auto 0;
+    border-radius: 2px;
+}
+
+/* Image below category box (tải xuống (1).jfif) */
+.col-md-9 > img {
+    border-radius: 10px !important; /* Bo tròn ảnh banner */
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+}
+
+/* Footer (nếu có, thêm style tổng quát) */
+footer {
+    background-color: #343a40; /* Màu tối cho footer */
+    color: #f8f9fa;
+    padding: 30px 0;
+    text-align: center;
+}
+
+footer p {
+    margin-bottom: 0;
+    font-size: 0.9rem;
+}

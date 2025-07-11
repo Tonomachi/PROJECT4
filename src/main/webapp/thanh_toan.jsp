@@ -108,6 +108,20 @@
                 Thanh toán khi nhận hàng (COD)
             </label>
         </div>
+        <div class="form-check">
+		    <input class="form-check-input" type="radio"
+		           name="hinhThucThanhToan" id="bank" value="BANK"
+		           <%= "BANK".equals(selectedMethod) ? "checked" : "" %>>
+		    <label class="form-check-label" for="bank">
+		        Chuyển khoản ngân hàng (Bank Transfer)
+		    </label>
+		</div>
+		<!-- QR hiển thị khi chọn chuyển khoản -->
+		<div id="qr-box" class="mt-3" style="display: none;">
+		    <h5>Mã QR chuyển khoản</h5>
+		    <p>Vui lòng quét mã QR để thanh toán đúng số tiền: <strong><%= String.format("%,.0f", subtotal) %> đ</strong></p>
+		    <img src="<%= request.getContextPath() %>/images/qrcode.png" class="img-fluid" style="max-width:300px">
+		</div>
 
         <hr class="mt-4">
         <button class="btn btn-success btn-lg w-100"
@@ -120,5 +134,27 @@
 
 <jsp:include page="/footer.jsp"/>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const codRadio = document.getElementById('cod');
+    const bankRadio = document.getElementById('bank');
+    const qrBox    = document.getElementById('qr-box');
+
+    function toggleQR() {
+        if (bankRadio.checked) {
+            qrBox.style.display = 'block';
+        } else {
+            qrBox.style.display = 'none';
+        }
+    }
+
+    codRadio.addEventListener('change', toggleQR);
+    bankRadio.addEventListener('change', toggleQR);
+
+    // Khởi động ban đầu (phòng khi reload)
+    toggleQR();
+});
+</script>
+
 </body>
 </html>
